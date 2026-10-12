@@ -164,16 +164,39 @@ if(localStorage.getItem("menuOpen") === "1"){
     });
 }
 
-window.addEventListener("beforeunload", function() {
-    localStorage.setItem("scrollpos", window.scrollY);
+// Simpan posisi scroll saat halaman ditinggalkan (pagehide lebih andal dari beforeunload)
+window.addEventListener("pagehide", function() {
+    try { localStorage.setItem("scrollpos", window.scrollY); } catch (e) {}
 });
 
-window.addEventListener("load", function() {
-    let scrollpos = localStorage.getItem("scrollpos");
-    if(scrollpos){
-        window.scrollTo(0, scrollpos);
+// Pulihkan posisi scroll secara INSTAN (tanpa animasi) tepat setelah DOM siap,
+// supaya halaman tidak "lompat" dari atas ke bawah saat refresh.
+(function () {
+    // matikan pemulihan otomatis browser agar tidak bentrok dengan kita
+    if (history.scrollRestoration) {
+        try { history.scrollRestoration = "manual"; } catch (e) {}
     }
-});
+
+    var y = parseInt(localStorage.getItem("scrollpos") || "0", 10);
+    if (!y || y < 0) return;
+
+    function pulihkan() {
+        var maks = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+        var target = Math.min(y, maks);
+        // paksa instan walau html pakai scroll-behavior:smooth
+        var html = document.documentElement;
+        var lama = html.style.scrollBehavior;
+        html.style.scrollBehavior = "auto";
+        window.scrollTo(0, target);
+        html.style.scrollBehavior = lama;
+    }
+
+    // pulihkan sebelum paint pertama (DOM siap, gaya belum dilukis)
+    pulihkan();
+    document.addEventListener("DOMContentLoaded", pulihkan, { once: true });
+    // sekali lagi saat semua resource termuat (tinggi dokumen bisa berubah)
+    window.addEventListener("load", pulihkan, { once: true });
+})();
 
 /* ===== GPS: ambil lokasi + reverse geocode ke alamat ===== */
 (function () {

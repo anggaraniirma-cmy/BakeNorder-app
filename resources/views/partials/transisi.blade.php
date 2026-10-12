@@ -10,10 +10,10 @@
     html { scroll-behavior: smooth; }
 
     /* ===== FADE-IN SAAT HALAMAN DIMUAT ===== */
-    body { animation: bno-masuk .45s ease-out both; }
+    body { animation: bno-masuk .4s ease-out both; }
     @keyframes bno-masuk {
-        from { opacity: 0; transform: translateY(6px); }
-        to   { opacity: 1; transform: none; }
+        from { opacity: 0; }
+        to   { opacity: 1; }
     }
 
     /* ===== OVERLAY FADE-OUT SAAT PINDAH HALAMAN ===== */
@@ -42,6 +42,9 @@
         border: 3px solid #ead9c4;
         border-top-color: #8B5A2B;
         border-radius: 50%;
+        /* animasi hanya jalan saat overlay aktif -> tidak buang render saat diam */
+    }
+    #bnoTransisi.aktif .bno-loader {
         animation: bno-putar .7s linear infinite;
     }
     @keyframes bno-putar { to { transform: rotate(360deg); } }
