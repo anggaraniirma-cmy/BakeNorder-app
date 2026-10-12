@@ -86,5 +86,7 @@ function togglePassword(icon) {
 }
 </script>
 
+@include('partials.transisi')
+
 </body>
 </html>

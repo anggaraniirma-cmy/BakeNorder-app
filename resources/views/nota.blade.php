@@ -181,5 +181,7 @@ function showList() {
 </script>
 
 @include('partials.footer')
+
+@include('partials.transisi')
 </body>
 </html>

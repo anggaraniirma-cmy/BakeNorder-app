@@ -100,5 +100,7 @@ window.onload = function () {
 };
 </script>
 
+@include('partials.transisi')
+
 </body>
 </html>
