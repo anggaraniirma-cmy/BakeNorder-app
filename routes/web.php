@@ -37,6 +37,7 @@ Route::middleware('auth')->group(function () {
     // ---- Admin ----
     Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
         Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
+        Route::get('/pesanan-data', [AdminController::class, 'pesananData'])->name('pesanan.data');
 
         // Kasir (POS)
         Route::get('/kasir', [AdminController::class, 'kasir'])->name('kasir');

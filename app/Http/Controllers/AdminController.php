@@ -13,21 +13,146 @@ use Illuminate\Support\Facades\DB;
 class AdminController extends Controller
 {
     /**
-     * Dashboard admin: produk, pesanan masuk, pembayaran.
+     * Nama hari Indonesia untuk filter (index 0 = Senin ... 6 = Minggu).
      */
-    public function dashboard()
+    private const HARI = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'];
+
+    /**
+     * Dashboard admin: ringkasan + produk + riwayat pesanan (terfilter & paginasi).
+     */
+    public function dashboard(Request $request)
     {
+        $filter = $this->ambilFilter($request);
+
+        $pesanan = $this->queryPesanan($filter)
+            ->paginate(10)
+            ->withQueryString();
+
+        // Ringkasan (angka nyata dari DB, hindari JOIN ganda)
+        $hariIni   = now()->toDateString();
+        $ringkasan = [
+            'pesanan_hari_ini'    => Pesanan::whereDate('created_at', $hariIni)->count(),
+            'penjualan_hari_ini'  => (int) Pesanan::whereDate('created_at', $hariIni)
+                                        ->where('status', 'Selesai')
+                                        ->sum('total'),
+            'menunggu'            => Pesanan::where('status', 'Menunggu')->count(),
+            'diambil_hari_ini'    => Pesanan::whereDate('tanggal_jadi', $hariIni)
+                                        ->whereIn('status', ['Menunggu', 'Selesai'])
+                                        ->count(),
+        ];
+
+        // Produk: tampilkan ringkas (5 terbaru), sisanya di halaman kelola
         $produk = Produk::orderByDesc('id')->get();
 
-        $pesanan = Pesanan::with(['detail.produk', 'pembayaran'])
-            ->orderByDesc('id')
-            ->get();
+        return view('admin.dashboard', [
+            'ringkasan'    => $ringkasan,
+            'produk'       => $produk,
+            'pesanan'      => $pesanan,
+            'filter'       => $filter,
+            'hariList'     => self::HARI,
+            'statusList'   => ['Menunggu', 'Selesai', 'Ditolak'],
+        ]);
+    }
 
-        $pembayaran = Pembayaran::with('pesanan')
-            ->orderByDesc('id')
-            ->get();
+    /**
+     * Validasi & normalisasi parameter filter dari request.
+     */
+    private function ambilFilter(Request $request): array
+    {
+        $hari = $request->query('hari');
+        $hari = ($hari !== null && $hari !== '' && is_numeric($hari) && (int) $hari >= 0 && (int) $hari <= 6)
+            ? (int) $hari
+            : null;
 
-        return view('admin.dashboard', compact('produk', 'pesanan', 'pembayaran'));
+        $status = $request->query('status');
+        $status = in_array($status, ['Menunggu', 'Selesai', 'Ditolak'], true) ? $status : null;
+
+        $dari = $request->query('dari');
+        $dari = ($dari && preg_match('/^\d{4}-\d{2}-\d{2}$/', $dari)) ? $dari : null;
+
+        $sampai = $request->query('sampai');
+        $sampai = ($sampai && preg_match('/^\d{4}-\d{2}-\d{2}$/', $sampai)) ? $sampai : null;
+
+        // Pastikan rentang tidak terbalik
+        if ($dari && $sampai && $dari > $sampai) {
+            [$dari, $sampai] = [$sampai, $dari];
+        }
+
+        $cari = trim((string) $request->query('cari', ''));
+        $cari = $cari === '' ? null : mb_substr($cari, 0, 100);
+
+        return compact('hari', 'status', 'dari', 'sampai', 'cari');
+    }
+
+    /**
+     * Query riwayat pesanan dengan filter hari (hari pembuatan), rentang tanggal,
+     * status, dan pencarian nama pelanggan.
+     */
+    private function queryPesanan(array $filter)
+    {
+        $query = Pesanan::with(['detail.produk', 'pembayaran'])
+            ->orderByDesc('created_at');
+
+        // Filter hari pembuatan (0=Senin ... 6=Minggu, sesuai WEEKDAY MySQL)
+        if ($filter['hari'] !== null) {
+            $query->whereRaw('WEEKDAY(created_at) = ?', [$filter['hari']]);
+        }
+
+        // Rentang tanggal pembuatan
+        if ($filter['dari']) {
+            $query->whereDate('created_at', '>=', $filter['dari']);
+        }
+        if ($filter['sampai']) {
+            $query->whereDate('created_at', '<=', $filter['sampai']);
+        }
+
+        if ($filter['status']) {
+            $query->where('status', $filter['status']);
+        }
+
+        if ($filter['cari']) {
+            $query->where('nama', 'like', '%' . $this->escapeLike($filter['cari']) . '%');
+        }
+
+        return $query;
+    }
+
+    /**
+     * Escape karakter wildcard LIKE agar pencarian aman.
+     */
+    private function escapeLike(string $value): string
+    {
+        return str_replace(['\\', '%', '_'], ['\\\\', '\\%', '\\_'], $value);
+    }
+
+    /**
+     * Endpoint polling: ringkasan + baris pesanan untuk halaman & filter aktif.
+     */
+    public function pesananData(Request $request)
+    {
+        $filter = $this->ambilFilter($request);
+
+        $paginator = $this->queryPesanan($filter)
+            ->paginate(10)
+            ->withQueryString();
+
+        $hariIni = now()->toDateString();
+
+        return response()->json([
+            'ringkasan' => [
+                'pesanan_hari_ini'   => Pesanan::whereDate('created_at', $hariIni)->count(),
+                'penjualan_hari_ini' => (int) Pesanan::whereDate('created_at', $hariIni)
+                                            ->where('status', 'Selesai')
+                                            ->sum('total'),
+                'menunggu'           => Pesanan::where('status', 'Menunggu')->count(),
+                'diambil_hari_ini'   => Pesanan::whereDate('tanggal_jadi', $hariIni)
+                                            ->whereIn('status', ['Menunggu', 'Selesai'])
+                                            ->count(),
+            ],
+            'html'  => view('admin._pesanan_tabel', ['pesanan' => $paginator])->render(),
+            'total' => $paginator->total(),
+            'waktu' => now()->format('H:i:s'),
+        ]);
     }
 
     /**

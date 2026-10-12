@@ -1,7 +1,8 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
-    <title>Dashboard | Admin</title>
+    <title>Dashboard | Admin BakeNOrder</title>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{ asset('css/dashboard.css') }}">
     <link rel="icon" type="image/png" href="{{ asset('assets/purnama_circle.png') }}">
@@ -10,141 +11,223 @@
 
 @include('partials.navbar')
 
-<!-- TAMBAH PRODUK -->
-<div class="box">
-    <h3>Tambah Produk</h3>
-    <form action="{{ route('admin.produk.tambah') }}" method="POST" enctype="multipart/form-data">
-        @csrf
-        <input type="text" name="nama_produk" placeholder="Nama Produk" required>
-        <input type="number" name="harga" placeholder="Harga" required>
-        <input type="file" name="foto" required>
-        <button type="submit">Tambah Produk</button>
-    </form>
-</div>
+<div class="dash-wrap">
 
-<!-- DATA PRODUK -->
-<div class="box">
-    <h3>Data Produk</h3>
-    <table>
-        <tr>
-            <th>No</th>
-            <th>Nama</th>
-            <th>Harga</th>
-            <th>Foto</th>
-            <th>Aksi</th>
-        </tr>
-        @foreach ($produk as $i => $p)
-        <tr>
-            <td>{{ $i + 1 }}</td>
-            <td>{{ $p->nama_produk }}</td>
-            <td>Rp {{ number_format($p->harga, 0, ',', '.') }}</td>
-            <td><img src="{{ $p->foto_url }}" width="60"></td>
-            <td>
-                <a href="{{ route('admin.produk.edit', $p->id) }}">Edit</a>
-                |
-                <a href="{{ route('admin.produk.hapus', $p->id) }}" onclick="return confirm('Hapus produk ini?')">Hapus</a>
-            </td>
-        </tr>
-        @endforeach
-    </table>
-</div>
+    <!-- ===== HEADER ===== -->
+    <div class="dash-head">
+        <div>
+            <h1>Dashboard Admin</h1>
+            <p class="dash-sub">Ringkasan penjualan &amp; riwayat pesanan BakeNOrder</p>
+        </div>
+        <div class="head-aksi">
+            <a href="{{ route('admin.kasir') }}" class="btn-head">🧾 Kasir</a>
+            <a href="{{ route('admin.pengiriman') }}" class="btn-head ghost">🚚 Pengiriman</a>
+        </div>
+    </div>
 
-<!-- DATA PESANAN -->
-<div class="box">
-    <h3>Pesanan Masuk</h3>
-    <table>
-        <tr>
-            <th>Nama</th>
-            <th>Daftar Kue</th>
-            <th>Total</th>
-            <th>Tanggal Jadi</th>
-            <th>Jam Ambil</th>
-            <th>Alamat</th>
-            <th>Lokasi</th>
-            <th>Metode</th>
-            <th>Status</th>
-            <th>Struk</th>
-        </tr>
-        @foreach ($pesanan as $ps)
-        <tr>
-            <td>{{ $ps->nama }}</td>
-            <td>
-                <ul style="padding-left:15px;">
-                @foreach ($ps->detail as $d)
-                    <li>{{ $d->produk->nama_produk ?? 'Produk' }} ({{ $d->jumlah }}x)</li>
+    <!-- ===== RINGKASAN ===== -->
+    <div class="ringkasan" id="ringkasan">
+        <div class="kartu-ringkas">
+            <div class="kr-ikon">📦</div>
+            <div>
+                <span class="kr-label">Pesanan Hari Ini</span>
+                <strong class="kr-angka" data-kunci="pesanan_hari_ini">{{ $ringkasan['pesanan_hari_ini'] }}</strong>
+            </div>
+        </div>
+        <div class="kartu-ringkas">
+            <div class="kr-ikon">💰</div>
+            <div>
+                <span class="kr-label">Penjualan Hari Ini</span>
+                <strong class="kr-angka" data-kunci="penjualan_hari_ini" data-rupiah="1">Rp {{ number_format($ringkasan['penjualan_hari_ini'], 0, ',', '.') }}</strong>
+                <span class="kr-catatan">hanya status Selesai</span>
+            </div>
+        </div>
+        <div class="kartu-ringkas">
+            <div class="kr-ikon warn">⏳</div>
+            <div>
+                <span class="kr-label">Menunggu Diproses</span>
+                <strong class="kr-angka" data-kunci="menunggu">{{ $ringkasan['menunggu'] }}</strong>
+            </div>
+        </div>
+        <div class="kartu-ringkas">
+            <div class="kr-ikon">🚚</div>
+            <div>
+                <span class="kr-label">Diambil Hari Ini</span>
+                <strong class="kr-angka" data-kunci="diambil_hari_ini">{{ $ringkasan['diambil_hari_ini'] }}</strong>
+                <span class="kr-catatan">sesuai tanggal jadi</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== RIWAYAT PESANAN ===== -->
+    <section class="panel">
+        <div class="panel-head">
+            <h2>Riwayat Pesanan</h2>
+            <span class="poll-info">
+                <span id="pollDot" class="dot"></span>
+                <span id="pollTeks">Terakhir diperbarui: {{ now()->format('H:i:s') }}</span>
+            </span>
+        </div>
+
+        <!-- Filter -->
+        <form method="GET" action="{{ route('admin.dashboard') }}" class="filter-bar" id="filterForm">
+            <input type="hidden" name="hari" value="{{ $filter['hari'] }}">
+
+            <div class="filter-hari">
+                <a href="{{ request()->fullUrlWithQuery(['hari' => null, 'page' => null]) }}"
+                   class="chip {{ $filter['hari'] === null ? 'aktif' : '' }}">Semua Hari</a>
+                @foreach ($hariList as $i => $nama)
+                    <a href="{{ request()->fullUrlWithQuery(['hari' => $i, 'page' => null]) }}"
+                       class="chip {{ $filter['hari'] === $i ? 'aktif' : '' }}">{{ $nama }}</a>
                 @endforeach
-                </ul>
-            </td>
-            <td>Rp {{ number_format($ps->total, 0, ',', '.') }}</td>
-            <td>{{ $ps->tanggal_jadi }}</td>
-            <td>{{ $ps->jam_pengambilan ? substr($ps->jam_pengambilan, 0, 5) : '-' }}</td>
-            <td>{{ $ps->alamat }}</td>
-            <td>
-                @if ($ps->latitude && $ps->longitude)
-                    <a href="https://www.google.com/maps?q={{ $ps->latitude }},{{ $ps->longitude }}" target="_blank">📍 Maps</a>
-                @else
-                    -
-                @endif
-            </td>
-            <td>
-                @if (!empty($ps->pembayaran->metode_pembayaran))
-                    {{ $ps->pembayaran->metode_pembayaran }}
-                @else
-                    <span style="color:red;">COD</span>
-                @endif
-            </td>
-            <td>
-                <form action="{{ route('admin.status.update') }}" method="POST">
-                    @csrf
-                    <input type="hidden" name="id" value="{{ $ps->id }}">
-                    <select name="status">
-                        <option value="Menunggu" {{ $ps->status == 'Menunggu' ? 'selected' : '' }}>Menunggu</option>
-                        <option value="Selesai"  {{ $ps->status == 'Selesai'  ? 'selected' : '' }}>Selesai</option>
-                        <option value="Ditolak"  {{ $ps->status == 'Ditolak'  ? 'selected' : '' }}>Ditolak</option>
+            </div>
+
+            <div class="filter-baris">
+                <div class="filter-field">
+                    <label for="status">Status</label>
+                    <select name="status" id="status">
+                        <option value="">Semua Status</option>
+                        @foreach ($statusList as $s)
+                            <option value="{{ $s }}" @selected($filter['status'] === $s)>{{ $s }}</option>
+                        @endforeach
                     </select>
-                    <button type="submit">Update</button>
-                </form>
-            </td>
-            <td>
-                <a href="{{ route('admin.kasir.struk', $ps->id) }}" target="_blank">🖨 Cetak</a>
-            </td>
-        </tr>
-        @endforeach
-    </table>
+                </div>
+                <div class="filter-field">
+                    <label for="dari">Dari Tanggal</label>
+                    <input type="date" name="dari" id="dari" value="{{ $filter['dari'] }}">
+                </div>
+                <div class="filter-field">
+                    <label for="sampai">Sampai Tanggal</label>
+                    <input type="date" name="sampai" id="sampai" value="{{ $filter['sampai'] }}">
+                </div>
+                <div class="filter-field grow">
+                    <label for="cari">Cari Pelanggan</label>
+                    <input type="text" name="cari" id="cari" value="{{ $filter['cari'] }}" placeholder="Nama pelanggan..." maxlength="100">
+                </div>
+                <div class="filter-aksi">
+                    <button type="submit" class="btn-filter">Terapkan</button>
+                    <a href="{{ route('admin.dashboard') }}" class="btn-reset">Reset</a>
+                </div>
+            </div>
+        </form>
+
+        <!-- Tabel pesanan (di-refresh otomatis oleh polling) -->
+        <div id="wadahPesanan">
+            @include('admin._pesanan_tabel', ['pesanan' => $pesanan])
+        </div>
+    </section>
+
+    <!-- ===== KELOLA PRODUK ===== -->
+    <section class="panel">
+        <div class="panel-head">
+            <h2>Kelola Produk</h2>
+            <span class="panel-info">{{ $produk->count() }} produk</span>
+        </div>
+
+        <details class="form-tambah">
+            <summary>+ Tambah Produk Baru</summary>
+            <form action="{{ route('admin.produk.tambah') }}" method="POST" enctype="multipart/form-data" class="form-produk">
+                @csrf
+                <div class="filter-baris">
+                    <div class="filter-field grow">
+                        <label for="nama_produk">Nama Produk</label>
+                        <input type="text" name="nama_produk" id="nama_produk" required maxlength="100">
+                    </div>
+                    <div class="filter-field">
+                        <label for="harga">Harga (Rp)</label>
+                        <input type="number" name="harga" id="harga" required min="0">
+                    </div>
+                    <div class="filter-field grow">
+                        <label for="foto">Foto</label>
+                        <input type="file" name="foto" id="foto" accept="image/*" required>
+                    </div>
+                    <div class="filter-aksi">
+                        <button type="submit" class="btn-filter">Tambah</button>
+                    </div>
+                </div>
+            </form>
+        </details>
+
+        <div class="grid-produk">
+            @forelse ($produk as $p)
+                <div class="kartu-produk">
+                    <img src="{{ $p->foto_url }}" alt="{{ $p->nama_produk }}" loading="lazy">
+                    <div class="kp-body">
+                        <span class="kp-nama">{{ $p->nama_produk }}</span>
+                        <span class="kp-harga">Rp {{ number_format($p->harga, 0, ',', '.') }}</span>
+                    </div>
+                    <div class="kp-aksi">
+                        <a href="{{ route('admin.produk.edit', $p->id) }}" class="btn-mini ghost">Edit</a>
+                        <a href="{{ route('admin.produk.hapus', $p->id) }}" class="btn-mini hapus"
+                           onclick="return confirm('Hapus produk {{ $p->nama_produk }}?')">Hapus</a>
+                    </div>
+                </div>
+            @empty
+                <p class="kosong">Belum ada produk.</p>
+            @endforelse
+        </div>
+    </section>
+
 </div>
 
-<!-- DATA PEMBAYARAN -->
-<div class="box">
-    <h3>Data Pembayaran</h3>
-    <table>
-        <tr>
-            <th>Nama</th>
-            <th>Metode</th>
-            <th>Bukti</th>
-            <th>Tanggal</th>
-        </tr>
-        @foreach ($pembayaran as $pb)
-        <tr>
-            <td>{{ $pb->pesanan->nama ?? '-' }}</td>
-            <td>
-                @if (!empty($pb->metode_pembayaran))
-                    {{ $pb->metode_pembayaran }}
-                @else
-                    <span style="color:red;">COD</span>
-                @endif
-            </td>
-            <td>
-                @if (!empty($pb->bukti_transfer))
-                    <img src="{{ asset('assets/' . $pb->bukti_transfer) }}" width="80">
-                @else
-                    <span style="color:red;">COD</span>
-                @endif
-            </td>
-            <td>{{ $pb->tanggal_bayar }}</td>
-        </tr>
-        @endforeach
-    </table>
-</div>
+<script>
+(function () {
+    const wadah   = document.getElementById('wadahPesanan');
+    const form    = document.getElementById('filterForm');
+    const dot     = document.getElementById('pollDot');
+    const teks    = document.getElementById('pollTeks');
+    const endpoint = "{{ route('admin.pesanan.data') }}";
+
+    const rupiah = n => 'Rp ' + Number(n).toLocaleString('id-ID');
+    let sedangKirimStatus = false;
+
+    // tandai saat admin submit update status -> tahan auto-refresh sesaat
+    document.addEventListener('submit', function (e) {
+        if (e.target.closest('.form-status')) sedangKirimStatus = true;
+    });
+
+    function terapkanRingkasan(data) {
+        document.querySelectorAll('.kr-angka').forEach(el => {
+            const kunci = el.dataset.kunci;
+            if (data[kunci] === undefined) return;
+            el.textContent = el.dataset.rupiah ? rupiah(data[kunci]) : data[kunci];
+        });
+    }
+
+    async function perbarui() {
+        if (sedangKirimStatus) return;
+        if (document.activeElement && document.activeElement.matches('#wadahPesanan input, #wadahPesanan select')) return;
+
+        const params = new URLSearchParams();
+        new FormData(form).forEach((v, k) => { if (v !== '') params.set(k, v); });
+        const halSekarang = new URLSearchParams(location.search).get('page');
+        if (halSekarang) params.set('page', halSekarang);
+
+        try {
+            const res = await fetch(endpoint + '?' + params.toString(), {
+                headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' },
+                credentials: 'same-origin'
+            });
+            if (!res.ok) throw new Error('HTTP ' + res.status);
+            const data = await res.json();
+            if (sedangKirimStatus) return;
+
+            wadah.innerHTML = data.html;
+            terapkanRingkasan(data.ringkasan);
+
+            dot.classList.remove('err');
+            teks.textContent = 'Terakhir diperbarui: ' + data.waktu;
+        } catch (err) {
+            dot.classList.add('err');
+            teks.textContent = 'Gagal memperbarui — periksa koneksi';
+        } finally {
+            sedangKirimStatus = false;
+        }
+    }
+
+    setInterval(perbarui, 12000);
+})();
+</script>
 
 @include('partials.footer')
 
