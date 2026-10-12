@@ -26,6 +26,7 @@ class AdminController extends Controller
 
         $pesanan = $this->queryPesanan($filter)
             ->paginate(10)
+            ->withPath(route('admin.dashboard'))
             ->withQueryString();
 
         // Ringkasan (angka nyata dari DB, hindari JOIN ganda)
@@ -134,6 +135,7 @@ class AdminController extends Controller
 
         $paginator = $this->queryPesanan($filter)
             ->paginate(10)
+            ->withPath(route('admin.dashboard'))
             ->withQueryString();
 
         $hariIni = now()->toDateString();
