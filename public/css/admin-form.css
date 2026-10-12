@@ -1,0 +1,178 @@
+/* ================================================================
+   BakeNOrder — Form Admin (halaman form sederhana)
+   Senada dengan dashboard.css: cokelat #8B5A2B, kartu putih, radius 14px
+   ================================================================ */
+
+:root {
+    --coklat: #8B5A2B;
+    --coklat-tua: #6d4420;
+    --coklat-teks: #5c3d1e;
+    --teks: #3e2a14;
+    --muted: #a08972;
+    --border: #f0e4d6;
+    --border-kuat: #e6d6c2;
+    --bg: #F6EFE8;
+    --radius: 14px;
+    --shadow: 0 6px 20px rgba(139, 90, 43, .09);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    font-family: 'Poppins', Arial, sans-serif;
+    background: var(--bg);
+    color: var(--teks);
+    font-size: 14px;
+    line-height: 1.5;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.form-wrap {
+    flex: 1;
+    width: 100%;
+    max-width: 620px;
+    margin: 0 auto;
+    padding: 26px 24px 60px;
+}
+
+.form-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 18px;
+}
+.form-top h1 {
+    font-size: 21px;
+    font-weight: 800;
+    color: var(--coklat-teks);
+}
+.btn-kembali {
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--coklat);
+    padding: 9px 16px;
+    border: 1.5px solid #d9c3a6;
+    border-radius: 999px;
+    background: #fff;
+    white-space: nowrap;
+    transition: background .2s, border-color .2s;
+}
+.btn-kembali:hover { background: #f6ede1; border-color: var(--coklat); }
+
+.kartu {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: var(--shadow);
+}
+
+.field-grup { margin-bottom: 18px; }
+.field-grup label {
+    display: block;
+    font-size: 12px;
+    font-weight: 700;
+    color: #7a5230;
+    letter-spacing: .2px;
+    margin-bottom: 7px;
+}
+.field-grup input[type="text"],
+.field-grup input[type="number"],
+.field-grup input:not([type]) {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #e0d5cc;
+    border-radius: 11px;
+    background: #fdfaf7;
+    font-family: inherit;
+    font-size: 13.5px;
+    color: var(--teks);
+    transition: border-color .2s, box-shadow .2s, background .2s;
+}
+.field-grup input:focus {
+    outline: none;
+    border-color: var(--coklat);
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(139,90,43,.13);
+}
+
+.foto-preview {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 14px;
+    background: #fdf9f4;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    margin-bottom: 12px;
+}
+.foto-preview img {
+    width: 84px;
+    height: 84px;
+    object-fit: cover;
+    border-radius: 10px;
+    background: #f4e9db;
+    flex-shrink: 0;
+}
+.foto-preview .foto-info { font-size: 12.5px; color: var(--muted); }
+
+input[type="file"] {
+    width: 100%;
+    padding: 11px 14px;
+    border: 1.5px dashed #d8c4ad;
+    border-radius: 12px;
+    background: #fdfaf7;
+    color: #8a7763;
+    font-size: 12.5px;
+    font-family: inherit;
+    cursor: pointer;
+}
+input[type="file"]:focus { box-shadow: 0 0 0 3px rgba(139,90,43,.13); }
+input[type="file"]::file-selector-button {
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    color: #fff;
+    background: var(--coklat);
+    border: none;
+    border-radius: 8px;
+    padding: 8px 14px;
+    margin-right: 12px;
+    cursor: pointer;
+    transition: background .2s;
+}
+input[type="file"]::file-selector-button:hover { background: var(--coklat-tua); }
+
+.helper { display: block; font-size: 11.5px; color: var(--muted); margin-top: 7px; }
+
+.btn-simpan {
+    width: 100%;
+    padding: 14px;
+    margin-top: 4px;
+    border: none;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #8B5A2B, #6d4420);
+    color: #fff;
+    font-family: inherit;
+    font-size: 14.5px;
+    font-weight: 700;
+    letter-spacing: .3px;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(139,90,43,.28);
+    transition: transform .15s, filter .25s, box-shadow .25s;
+}
+.btn-simpan:hover { transform: translateY(-2px); filter: brightness(1.07); box-shadow: 0 8px 22px rgba(139,90,43,.38); }
+.btn-simpan:active { transform: translateY(0); }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 640px) {
+    .form-wrap { padding: 18px 14px 50px; }
+    .form-top h1 { font-size: 19px; }
+    .kartu { padding: 18px 16px; border-radius: 14px; }
+    .foto-preview { flex-direction: column; align-items: flex-start; }
+}
