@@ -1,0 +1,527 @@
+*{box-sizing:border-box}
+
+html, body{
+    height:auto;
+}
+
+body{
+    margin:0;
+    font-family:Arial, sans-serif;
+    background:#F6EFE8;
+    display:flex;
+    flex-direction:column;
+}
+
+/* ===== CONTENT ===== */
+.container{
+    flex:1 1 auto;
+    min-height:calc(100vh - 70px);
+    display:flex;
+    padding:30px 40px 55px;
+    gap:25px;
+}
+.left{width:65%}
+.right{width:35%}
+
+/* ===== CARD BOX ===== */
+.box{
+    background:#fff;
+    border-radius:15px;
+    padding:20px;
+    margin-bottom:25px;
+    box-shadow:0 2px 6px rgba(0,0,0,.08);
+}
+.box h3{
+    margin-top:0;
+    display:flex;
+    justify-content:space-between;
+}
+.box h3 .lihat{
+    float:right;
+    font-size:14px;
+    text-decoration:none;
+    color:black;
+}
+.box h3 .lihat:hover{
+    color:#5a6fe0;
+}
+.box h3 .lihatsemuanya{
+    text-decoration:none;
+    color:blue;
+    font-size:medium;
+}
+
+/* ===== MENU ===== */
+.menu-grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:15px;
+}
+.card{text-align:center}
+.card img{
+    width:100%;
+    height:120px;
+    object-fit:cover;
+    border-radius:10px;
+}
+.card p{
+    margin:5px 0 0;
+    color:#8B5A2B;
+    font-weight:bold;
+}
+
+/* ===== TAMBAH KERANJANG ===== */
+.card form {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+}
+
+.card form input[type="number"] {
+    width: 50px !important;
+    height: 36px;
+    padding: 6px;
+    border: 2px solid #e0d5cc;
+    border-radius: 10px;
+    text-align: center;
+    font-size: 14px;
+    font-weight: bold;
+    color: #5a3e2b;
+    background: #fdf8f3;
+    transition: all 0.2s ease;
+}
+
+.card form input[type="number"]:focus {
+    outline: none;
+    border-color: #c9a87c;
+    background: #fff;
+}
+
+.card form button[type="submit"] {
+    background: #8B5A2B;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 8px 16px;
+    font-size: 13px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.card form button[type="submit"]:hover {
+    background: #6d4420;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(139, 90, 43, 0.35);
+}
+
+.card form button[type="submit"]:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 6px rgba(139, 90, 43, 0.25);
+}
+
+/* ===== FORM ===== */
+.form{
+    padding:26px 24px 28px;
+}
+
+.form h3{
+    margin:0 0 4px;
+    font-size:19px;
+    font-weight:800;
+    color:#5c3d1e;
+    letter-spacing:.3px;
+}
+
+.form h3::after{
+    content:"";
+    display:block;
+    width:46px;
+    height:3px;
+    border-radius:3px;
+    background:#8B5A2B;
+    margin-top:9px;
+}
+
+.form h4{
+    margin:20px 0 10px;
+    font-size:14px;
+    font-weight:700;
+    color:#7a5230;
+    text-transform:uppercase;
+    letter-spacing:.6px;
+}
+
+.form > form{
+    margin-top:18px;
+}
+
+/* ----- Ringkasan pesanan (keranjang) ----- */
+.form ul{
+    list-style:none;
+    padding:0;
+    margin:0 0 14px;
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+}
+
+.form ul li{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    flex-wrap:wrap;
+    background:#fdf8f3;
+    border:1px solid #f0e2d3;
+    border-radius:12px;
+    padding:11px 14px;
+    font-size:13px;
+    color:#4a3520;
+    line-height:1.5;
+}
+
+.form ul li .btn-hapus{
+    flex-shrink:0;
+    display:inline-block;
+    padding:5px 13px;
+    background:#fff0f0;
+    color:#c0392b;
+    border:1px solid #e8b4b0;
+    border-radius:20px;
+    text-decoration:none;
+    font-size:12px;
+    font-weight:600;
+    transition:background .25s, color .25s, border-color .25s;
+}
+
+.form ul li .btn-hapus:hover{
+    background:#c0392b;
+    color:#fff;
+    border-color:#c0392b;
+}
+
+.form .total-note{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    background:#f6ede1;
+    border:1px solid #e8d6bf;
+    border-radius:12px;
+    padding:12px 16px;
+    font-size:14px;
+    color:#5c3d1e;
+    margin:0 0 16px;
+}
+
+.form .total-note strong{
+    font-size:17px;
+    color:#8B5A2B;
+}
+
+/* ----- Pesan error / keranjang kosong ----- */
+.form .form-error{
+    background:#fdf0ef;
+    border:1px solid #f0c4bf;
+    border-left:4px solid #c0392b;
+    border-radius:10px;
+    padding:11px 14px;
+    font-size:13px;
+    color:#a53125;
+    margin:0 0 16px;
+}
+
+/* ----- Label ----- */
+.form label{
+    display:block;
+    font-size:12px;
+    font-weight:600;
+    color:#7a5230;
+    letter-spacing:.3px;
+    padding:0;
+    margin:0 0 7px;
+}
+
+/* ----- Field dasar ----- */
+.form input,
+.form textarea,
+.form select{
+    width:100%;
+    padding:12px 15px;
+    margin-bottom:16px;
+    border-radius:12px;
+    border:1px solid #e0d5cc;
+    background:#fdfaf7;
+    color:#3e2a14;
+    font-family:inherit;
+    font-size:13.5px;
+    line-height:1.4;
+    transition:border-color .2s, background .2s, box-shadow .2s;
+    -webkit-appearance:none;
+    appearance:none;
+}
+
+.form input::placeholder,
+.form textarea::placeholder{
+    color:#b8a898;
+}
+
+.form input:hover,
+.form textarea:hover,
+.form select:hover{
+    border-color:#cdb79f;
+}
+
+.form input:focus,
+.form textarea:focus,
+.form select:focus{
+    outline:none;
+    border-color:#8B5A2B;
+    background:#fff;
+    box-shadow:0 0 0 3px rgba(139,90,43,.13);
+}
+
+.form textarea{
+    min-height:96px;
+    resize:vertical;
+}
+
+/* ----- Select dengan panah kustom ----- */
+.form select{
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%238B5A2B' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat:no-repeat;
+    background-position:right 15px center;
+    padding-right:42px;
+    cursor:pointer;
+}
+
+/* ----- Input tanggal ----- */
+.form input[type="date"]{
+    cursor:pointer;
+}
+
+/* ----- Upload file ----- */
+.form input[type="file"]{
+    padding:11px 14px;
+    border:1.5px dashed #d8c4ad;
+    border-radius:12px;
+    background:#fdfaf7;
+    color:#8a7763;
+    font-size:12.5px;
+    cursor:pointer;
+}
+
+.form input[type="file"]:focus{
+    box-shadow:0 0 0 3px rgba(139,90,43,.13);
+}
+
+.form input[type="file"]::file-selector-button{
+    font-family:inherit;
+    font-size:12px;
+    font-weight:700;
+    color:#fff;
+    background:#8B5A2B;
+    border:none;
+    border-radius:8px;
+    padding:8px 14px;
+    margin-right:12px;
+    cursor:pointer;
+    transition:background .2s;
+}
+
+.form input[type="file"]::file-selector-button:hover{
+    background:#734621;
+}
+
+/* ----- Tombol lokasi GPS ----- */
+.form .btn-lokasi{
+    width:100%;
+    margin:0 0 6px;
+    padding:11px 14px;
+    border:1.5px dashed #cdb79f;
+    border-radius:12px;
+    background:#fdf8f3;
+    color:#8B5A2B;
+    font-family:inherit;
+    font-size:13px;
+    font-weight:700;
+    letter-spacing:.2px;
+    cursor:pointer;
+    transition:background .2s, border-color .2s, border-style .2s;
+}
+.form .btn-lokasi:hover:not(:disabled){
+    background:#f6ede1;
+    border-color:#8B5A2B;
+    border-style:solid;
+}
+.form .btn-lokasi:disabled{
+    opacity:.6;
+    cursor:wait;
+}
+
+.lokasi-status{
+    display:none;
+    font-size:11.5px;
+    line-height:1.5;
+    margin:0 0 14px;
+    padding:8px 12px;
+    border-radius:9px;
+}
+.lokasi-status:not(:empty){
+    display:block;
+}
+.lokasi-status.loading{
+    background:#fff8e6;
+    border:1px solid #f0dcae;
+    color:#8a6a1f;
+}
+.lokasi-status.ok{
+    background:#f0fbf4;
+    border:1px solid #b9e6cb;
+    color:#137a41;
+}
+.lokasi-status.err{
+    background:#fdf0ef;
+    border:1px solid #f0c4bf;
+    color:#a53125;
+}
+
+/* ----- Tombol kirim ----- */
+.form button{
+    width:100%;
+    padding:14px;
+    margin:6px 0 0;
+    border:none;
+    border-radius:12px;
+    background:linear-gradient(135deg,#8B5A2B,#6d4420);
+    color:#fff;
+    font-family:inherit;
+    font-size:14.5px;
+    font-weight:700;
+    letter-spacing:.4px;
+    cursor:pointer;
+    transition:transform .15s, box-shadow .25s, filter .25s;
+    box-shadow:0 4px 14px rgba(139,90,43,.28);
+}
+
+.form button:hover{
+    transform:translateY(-2px);
+    filter:brightness(1.07);
+    box-shadow:0 8px 22px rgba(139,90,43,.38);
+}
+
+.form button:active{
+    transform:translateY(0);
+    box-shadow:0 3px 10px rgba(139,90,43,.3);
+}
+
+/* ================= RESPONSIVE ================= */
+
+/* ---- Tablet / jendela menyempit (mis. devtools terbuka) ---- */
+@media (max-width: 1024px) {
+    .container{
+        padding:24px 24px 55px;
+        gap:20px;
+    }
+
+    .menu-grid{
+        grid-template-columns:repeat(3,1fr);
+        gap:14px;
+    }
+
+    .card img{
+        height:110px;
+    }
+}
+
+@media (max-width: 900px) {
+    .menu-grid{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+    /* Beri ruang lebih untuk form pesanan */
+    .left{ width:56%; }
+    .right{ width:44%; }
+}
+
+@media (max-width: 768px) {
+
+    body{ font-size:14px; }
+
+    .container{
+        flex-direction:column;
+        padding:15px 15px 45px;
+        gap:20px;
+    }
+
+    .left,.right{
+        width:100%;
+    }
+
+    .box{
+        padding:15px;
+        border-radius:12px;
+    }
+
+    .box h3{
+        font-size:16px;
+    }
+
+    .menu-grid{
+        grid-template-columns:repeat(2,1fr);
+        gap:12px;
+    }
+
+    .card img{
+        height:100px;
+    }
+
+    .card strong{
+        font-size:14px;
+    }
+
+    .card p{
+        font-size:13px;
+    }
+
+    /* ===== TAMBAH KERANJANG RESPONSIVE ===== */
+    .card form {
+        gap: 6px;
+        margin-top: 8px;
+    }
+
+    .card form input[type="number"] {
+        width: 44px !important;
+        height: 32px;
+        padding: 4px;
+        font-size: 13px;
+        border-radius: 8px;
+    }
+
+    .card form button[type="submit"] {
+        padding: 6px 12px;
+        font-size: 12px;
+        border-radius: 8px;
+    }
+
+    .form textarea{
+        min-height:80px;
+    }
+
+    .form button{
+        font-size:15px;
+        padding:12px;
+    }
+
+    footer{
+        font-size:13px;
+        padding:15px 10px;
+        line-height:1.6;
+    }
+}

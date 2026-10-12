@@ -1,0 +1,269 @@
+/* ===== RESET & BASE ===== */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Poppins', Arial, sans-serif;
+    background: #F6EFE8;
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+}
+
+/* ===== SPLIT CONTAINER ===== */
+.split-container {
+    display: flex;
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* ===== KIRI - BRANDING ===== */
+.split-left {
+    flex: 1;
+    background: #8B5A2B;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 2rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.split-left::before {
+    content: '';
+    position: absolute;
+    width: 420px;
+    height: 420px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.06);
+    top: -120px;
+    right: -120px;
+}
+
+.split-left::after {
+    content: '';
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.06);
+    bottom: -80px;
+    left: -80px;
+}
+
+.brand-content {
+    text-align: center;
+    color: white;
+    position: relative;
+    z-index: 1;
+}
+
+.brand-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 52px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+}
+
+.brand-tagline {
+    font-size: 13px;
+    font-weight: 300;
+    opacity: 0.85;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+}
+
+.brand-desc {
+    font-size: 13px;
+    opacity: 0.75;
+    line-height: 1.8;
+}
+
+/* ===== KANAN - FORM ===== */
+.split-right {
+    width: 600px;
+    min-width: 460px;
+    background: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 3rem 4rem;
+}
+
+.form-box {
+    width: 100%;
+    max-width: 380px;
+}
+
+.form-header {
+    margin-bottom: 1.75rem;
+}
+
+.form-header h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    color: #8B5A2B;
+    margin-bottom: 4px;
+}
+
+.form-header p {
+    font-size: 12px;
+    color: #999;
+}
+
+/* ===== FIELDS ===== */
+.field {
+    position: relative;
+    margin-bottom: 14px;
+}
+
+.field-icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 15px;
+    pointer-events: none;
+    line-height: 1;
+}
+
+.field input {
+    width: 100%;
+    padding: 12px 42px 12px 40px;
+    border-radius: 25px;
+    border: 1px solid #e0d4c8;
+    font-size: 13px;
+    font-family: 'Poppins', Arial, sans-serif;
+    color: #333;
+    background: #fdfaf7;
+    outline: none;
+    transition: border-color 0.2s, background 0.2s;
+}
+
+.field input:focus {
+    border-color: #8B5A2B;
+    background: #fff;
+}
+
+.field input::placeholder {
+    color: #bbb;
+}
+
+.toggle {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    font-size: 17px;
+    line-height: 1;
+    user-select: none;
+    transition: opacity 0.2s;
+}
+
+.toggle:hover {
+    opacity: 0.7;
+}
+
+/* ===== BUTTON ===== */
+.btn-daftar {
+    width: 100%;
+    padding: 12px;
+    border-radius: 25px;
+    border: none;
+    background: #8B5A2B;
+    color: white;
+    font-family: 'Poppins', Arial, sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: background 0.25s, transform 0.1s;
+    margin-top: 6px;
+}
+
+.btn-daftar:hover {
+    background: #734621;
+}
+
+.btn-daftar:active {
+    transform: scale(0.98);
+}
+
+/* ===== LINK ===== */
+.link {
+    margin-top: 16px;
+    font-size: 12px;
+    color: #999;
+    text-align: center;
+}
+
+.link a {
+    color: #8B5A2B;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.link a:hover {
+    text-decoration: underline;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 640px) {
+    body {
+        height: auto;
+        overflow: auto;
+    }
+
+    .split-container {
+        flex-direction: column;
+        height: auto;
+        min-height: 100vh;
+    }
+
+    .split-left {
+        padding: 2rem 1.5rem;
+        min-height: 200px;
+    }
+
+    .brand-name {
+        font-size: 34px;
+    }
+
+    .brand-desc {
+        display: none;
+    }
+
+    .split-right {
+        width: 100%;
+        min-width: unset;
+        padding: 2rem 1.5rem;
+        justify-content: center;
+        flex: 1;
+    }
+
+    .form-box {
+        max-width: 100%;
+    }
+}
+
+@media (max-width: 400px) {
+    .split-right {
+        padding: 1.5rem 1.25rem;
+    }
+
+    .field input {
+        font-size: 14px;
+        padding: 13px 42px 13px 40px;
+    }
+
+    .btn-daftar {
+        font-size: 15px;
+    }
+}
